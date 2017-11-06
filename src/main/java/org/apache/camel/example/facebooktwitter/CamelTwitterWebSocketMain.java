@@ -18,27 +18,27 @@ public final class CamelTwitterWebSocketMain {
     private static String OAuthAppSecret = Keys.OAuthAppSecret;
     
     private CamelTwitterWebSocketMain() {
-        // to pass checkstyle we have a private constructor
+        // 
     }
 
     public static void main(String[] args) throws Exception {
 
-        // create a new Camel Main so we can easily start Camel
+        // Crear un main de Camel
         Main main = new Main();
 
         TwitterFacebookRoute route = new TwitterFacebookRoute();
 
-        // setup twitter application authentication
+        // Colocar las llaves de acceso de twitter
         route.setAccessToken(accessToken);
         route.setAccessTokenSecret(accessTokenSecret);
         route.setConsumerKey(consumerKey);
         route.setConsumerSecret(consumerSecret);
         
-        // setup facebook application authentication
+        // Colocar llaves de facebook
         route.setOAuthAppId(OAuthAppId);
         route.setOAuthAppSecret(OAuthAppSecret);
         
-        // add facebook pages
+        // agregar paginas de facebbok
         route.addFacebookId("9gag");
         route.addFacebookId("IFeakingLoveScience");
         route.addFacebookId("trustmestore");

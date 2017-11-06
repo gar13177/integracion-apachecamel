@@ -126,7 +126,8 @@ public class TwitterFacebookRoute extends RouteBuilder {
         {
             from("facebook://getFeed?userId=" 
                     + fbId + "&reading.limit=2&reading.since="
-                    + since + "&consumer.initialDelay=1000&consumer.delay=3000&consumer.sendEmptyMessageWhenIdle=true")
+                    + since + "&consumer.initialDelay=1000&consumer.delay=3000&consumer.sendEmptyMessageWhenIdle=true"
+                    + "&reading.fields=sharesCount")
                     .to("direct:aggregateRoute");
         }
         
@@ -135,6 +136,8 @@ public class TwitterFacebookRoute extends RouteBuilder {
                 .process(processor)
                 .filter(header("isNull").isEqualTo("no"))
                 .filter(header("post").isEqualTo("yes"))
+                .filter(header("link").isEqualTo("yes"))
+                .filter(header("shares").isEqualTo("yes"))
                 .choice()
                 .when(header("timeline").isEqualTo("yes"))
                 .to("twitter://timeline/user")

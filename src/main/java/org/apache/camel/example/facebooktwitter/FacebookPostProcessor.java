@@ -29,19 +29,28 @@ public class FacebookPostProcessor implements Processor{
             public void process(Exchange exchange) throws Exception {
                 Post message;
                 System.out.println(exchange.getIn().getBody(String.class));
+                
                 message = exchange.getIn().getBody(Post.class);
                 
                 if(message != null)
-                {
+                {	
+                	
                     exchange.getOut().setHeader("isNull", "no");
                     if (message.getMessage() != null && message.getMessage().length() < 140) {
                         exchange.getOut().setHeader("post", "yes");
+                        
                         if (message.getMessage().contains("http")) {
-                            exchange.getOut().setHeader("timeline", "yes");
+                           exchange.getOut().setHeader("link", "yes");
                         } else {
                             exchange.getOut().setHeader("timeline", "no");
                         }
-
+                        System.out.println(message.getSharesCount());
+                    	if (message.getSharesCount() > 20) {
+                    		exchange.getOut().setHeader("shares", "yes");
+                    	}
+                    	else {
+                    		exchange.getOut().setHeader("shares", "no");
+                    	}
                     } else {
                         exchange.getOut().setHeader("post", "no");
                     }
