@@ -44,13 +44,13 @@ public class FacebookPostProcessor implements Processor{
                         } else {
                             exchange.getOut().setHeader("timeline", "no");
                         }
-                        System.out.println(message.getSharesCount());
+                        /*System.out.println(message.getSharesCount());
                     	if (message.getSharesCount() > 20) {
                     		exchange.getOut().setHeader("shares", "yes");
                     	}
                     	else {
                     		exchange.getOut().setHeader("shares", "no");
-                    	}
+                    	}*/
                     } else {
                         exchange.getOut().setHeader("post", "no");
                     }
