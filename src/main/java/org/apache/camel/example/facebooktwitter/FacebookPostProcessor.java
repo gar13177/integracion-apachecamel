@@ -28,7 +28,7 @@ public class FacebookPostProcessor implements Processor{
             @Override
             public void process(Exchange exchange) throws Exception {
                 Post message;
-                System.out.println(exchange.getIn().getBody(String.class));
+                //System.out.println(exchange.getIn().getBody(String.class));
                 
                 message = exchange.getIn().getBody(Post.class);
                 
@@ -42,15 +42,27 @@ public class FacebookPostProcessor implements Processor{
                         if (message.getMessage().contains("http")) {
                            exchange.getOut().setHeader("link", "yes");
                         } else {
-                            exchange.getOut().setHeader("timeline", "no");
+                            exchange.getOut().setHeader("link", "no");
                         }
-                        /*System.out.println(message.getSharesCount());
-                    	if (message.getSharesCount() > 20) {
-                    		exchange.getOut().setHeader("shares", "yes");
-                    	}
-                    	else {
-                    		exchange.getOut().setHeader("shares", "no");
-                    	}*/
+                        
+                        if (message.getLikes() != null) {
+                        	System.out.println(message.getLikes().size());
+	                    	if (message.getLikes().size() > 25) {
+	                    		exchange.getOut().setHeader("likes", "yes");
+	                    	}
+	                    	else {
+	                    		exchange.getOut().setHeader("likes", "no");
+	                    	}
+                        }
+                        if (message.getSharesCount() != null) {
+                        	System.out.println(message.getSharesCount());
+	                    	if (message.getSharesCount() > 1000) {
+	                    		exchange.getOut().setHeader("shares", "yes");
+	                    	}
+	                    	else {
+	                    		exchange.getOut().setHeader("shares", "no");
+	                    	}
+                        }
                     } else {
                         exchange.getOut().setHeader("post", "no");
                     }

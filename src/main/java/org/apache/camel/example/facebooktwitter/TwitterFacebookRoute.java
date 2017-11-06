@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.apache.camel.Processor;
+import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.twitter.TwitterComponent;
 import org.apache.camel.component.facebook.FacebookComponent;
@@ -119,14 +120,16 @@ public class TwitterFacebookRoute extends RouteBuilder {
 
         // Fecha desde cuando se desea contenido
         String since = "RAW(" + new SimpleDateFormat(FacebookConstants.FACEBOOK_DATE_FORMAT).format(
-                    new Date(System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS))) + ")";
+                    new Date(System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(7, TimeUnit.DAYS))) + ")";
 
         //Crear rutas de origen para cada pagina que se desea
         for(String fbId: fbIds)
         {
             from("facebook://getFeed?userId=" 
-                    + fbId + "&reading.limit=50&reading.since="
-                    + since + "&consumer.initialDelay=1000&consumer.delay=3000&consumer.sendEmptyMessageWhenIdle=true")
+                    + fbId + "&reading.limit=100&reading.fields=sharesCount,share,shares,likes,message,name,type"
+                    + "&reading.locale=true"
+                    + "&reading.since="
+                    + since + "&consumer.initialDelay=10000&consumer.delay=3000&consumer.sendEmptyMessageWhenIdle=true")
                     .to("direct:aggregateRoute");
         }
         
@@ -136,10 +139,13 @@ public class TwitterFacebookRoute extends RouteBuilder {
                 .filter(header("isNull").isEqualTo("no"))
                 .filter(header("post").isEqualTo("yes"))
                 .filter(header("link").isEqualTo("yes"))
+                //.filter(header("shares").isEqualTo("yes"))
+                //.filter(header("likes").isEqualTo("yes"))
                 .choice()
-                .when(header("timeline").isEqualTo("yes"))
-                .to("twitter://timeline/user")
-                .otherwise()
-                .to("twitter://directmessage?user=FCPaulDiaz");
+		        .when(PredicateBuilder.or(header("shares").isEqualTo("yes"),header("likes").isEqualTo("yes")))		        
+		        .to("twitter://directmessage?user=FCPaulDiaz")
+		        .otherwise()
+		        .to("twitter://timeline/user");
+
     }
 }
